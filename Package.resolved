@@ -1,0 +1,15 @@
+{
+  "originHash" : "33a4b4e03ae806293d4043e4c34a498055c2648b3babe4ed96691da6aa0e785f",
+  "pins" : [
+    {
+      "identity" : "terminal-ansi",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/juri/terminal-ansi",
+      "state" : {
+        "revision" : "bb6530f2f29d059629adf76ef3a27b5e06382059",
+        "version" : "0.1.1"
+      }
+    }
+  ],
+  "version" : 3
+}
