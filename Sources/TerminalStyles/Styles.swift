@@ -7,11 +7,11 @@
 import TerminalANSI
 
 public struct Style {
-    public var background: [Background]
+    var background: Background?
     public var foreground: [Foreground]
 
     public init(
-        background: [Background] = [],
+        background: Background? = nil,
         foreground: [Foreground] = [],
     ) {
         self.background = background
@@ -20,24 +20,12 @@ public struct Style {
 
     public mutating func add(contentsOf style: Style) {
         self.add(foregrounds: style.foreground)
-        self.add(backgrounds: style.background)
+        self.background = style.background
     }
 
     public func adding(contentsOf style: Style) -> Style {
         var value = self
         value.add(contentsOf: style)
-        return value
-    }
-
-    public mutating func add(backgrounds: [Background]) {
-        if let lastBackground = background.last {
-            self.background = [lastBackground]
-        }
-    }
-
-    public func adding(backgrounds: [Background]) -> Style {
-        var value = self
-        value.add(backgrounds: backgrounds)
         return value
     }
 
@@ -51,11 +39,11 @@ public struct Style {
         return value
     }
 
-    public mutating func add(background: Background) {
-        self.background = [background]
+    public mutating func add(background: Background?) {
+        self.background = background
     }
 
-    public func adding(background: Background) -> Style {
+    public func adding(background: Background?) -> Style {
         var value = self
         value.add(background: background)
         return value
@@ -72,9 +60,12 @@ public struct Style {
     }
 
     public var ansiCommand: ANSICommand {
-        let textCodes = self.foreground.map(\.setGraphicsRendition)
-        let backgroundCodes = self.background.map(\.setGraphicsRendition)
-        return ANSIControlCode.setGraphicsRendition(textCodes + backgroundCodes).ansiCommand
+        var codes = self.foreground.map(\.setGraphicsRendition)
+        if let background = self.background {
+            codes.append(background.setGraphicsRendition)
+        }
+
+        return ANSIControlCode.setGraphicsRendition(codes).ansiCommand
     }
 
     public func apply(to text: String) -> String {
