@@ -15,5 +15,19 @@ struct Runner {
         print(style.adding(foregrounds: [.bold, .italic]).apply(to: "world!"))
         style.add(background: .colorRGB(.init(intR: 0x90, g: 0xB0, b: 0xFF)))
         print(style.apply(to: "With background!"))
+
+        let styleAndUnderline = StyleBuilder.styledOutput {
+            style
+            Foreground.underline
+        }
+
+        print(
+            StyleBuilder.string {
+                Foreground.colorRGB(.init(intR: 0x40, g: 0xD0, b: 0x90))
+                Foreground.bold
+                styleAndUnderline
+                "Builders, too"
+            }
+        )
     }
 }
