@@ -7,7 +7,7 @@
 import TerminalANSI
 
 public struct Style {
-    var background: Background?
+    public var background: Background?
     public var foreground: [Foreground]
 
     public init(
