@@ -6,8 +6,13 @@
 
 import TerminalANSI
 
+/// `Style` defines a background and a foreground for text output to terminal.
+///
+/// Both background and foreground are optional. You can stack multiple foreground styles.
 public struct Style {
+    /// Background style.
     public var background: Background?
+    /// Foreground styles.
     public var foreground: [Foreground]
 
     public init(
@@ -18,47 +23,61 @@ public struct Style {
         self.foreground = foreground
     }
 
+    /// Add the contents of `style` to this style, overriding the current values where they conflict
+    /// with the new ones.
     public mutating func add(contentsOf style: Style) {
         self.add(foregrounds: style.foreground)
         self.background = style.background
     }
 
+    /// Combine this style with another one to create a new `Style`, overriding the values of this style with
+    /// those of the other one where they conflict.
     public func adding(contentsOf style: Style) -> Style {
         var value = self
         value.add(contentsOf: style)
         return value
     }
 
+    /// Add foregrounds to this style, overriding the current values where they conflict with the new ones.
     public mutating func add(foregrounds: [Foreground]) {
         Foreground.add(foregrounds, to: &self.foreground)
     }
 
+    /// Combine this style with the foregrounds passed in as a parameter and return a new `Style`. The parameter
+    /// foregrounds override the foregrounds of this style where they conflict.
     public func adding(foregrounds: [Foreground]) -> Style {
         var value = self
         value.add(foregrounds: foregrounds)
         return value
     }
 
+    /// Add the background to this style.
     public mutating func add(background: Background?) {
         self.background = background
     }
 
+    /// Combine this style with the passed-in background to create a new `Style`. The parameter background
+    /// overrides the background in this style.
     public func adding(background: Background?) -> Style {
         var value = self
         value.add(background: background)
         return value
     }
 
+    /// Add the foregrounds to this style, overriding the current ones where they conflict.
     public mutating func add(foreground: Foreground) {
         self.add(foregrounds: [foreground])
     }
 
+    /// Combine this style with the passed-in foregrounds to create a new style, overriding the current foregrounds
+    /// where they conflict.
     public func adding(foreground: Foreground) -> Style {
         var value = self
         value.add(foreground: foreground)
         return value
     }
 
+    /// Create an `ANSIControlCode` for this style.
     public var ansiControlCode: ANSIControlCode {
         var codes = self.foreground.map(\.setGraphicsRendition)
         if let background = self.background {
@@ -68,15 +87,18 @@ public struct Style {
         return ANSIControlCode.setGraphicsRendition(codes)
     }
 
+    /// Create an `ANSICommand` for this style.
     public var ansiCommand: ANSICommand {
         self.ansiControlCode.ansiCommand
     }
 
+    /// Apply this style to `text` to create a styled `String`.
     public func apply(to text: String) -> String {
         "\(self.ansiCommand.message)\(text)\(ANSIControlCode.setGraphicsRendition([.reset]).ansiCommand.message)"
     }
 }
 
+/// Foreground styles you can apply to text.
 public enum Foreground {
     case bold
     case color256(Int)
@@ -125,6 +147,10 @@ public enum Foreground {
         return true
     }
 
+    /// Add `foregrounds` to a list of `Foreground` values.
+    ///
+    /// This method removes any existing `Foreground` values from `list` where they
+    /// conflict with the values in `foregrounds`.
     static func add(_ foregrounds: [Foreground], to list: inout [Foreground]) {
         var bold: Foreground?
         var color: Foreground?
@@ -158,6 +184,7 @@ public enum Foreground {
     }
 }
 
+/// Background styles you can apply to text.
 public enum Background {
     case color256(Int)
     case colorBasic(BasicPalette)

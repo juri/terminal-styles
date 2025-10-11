@@ -7,6 +7,8 @@
 import Foundation
 import TerminalANSI
 
+/// Build ``StyledOutput`` from ``Foreground``, ``Background``, ``Style``, ``String``
+/// and other ``StyledOutput`` values.
 @resultBuilder
 public struct StyleBuilder {
     public static func buildBlock() -> StyledOutput { StyledOutputEmpty() }
@@ -59,10 +61,12 @@ public struct StyleBuilder {
     }
 }
 
+/// Text combined with styles you can build with ``StyleBuilder``.
 public protocol StyledOutput {
     var controlCode: [ANSIControlCode] { get }
 }
 
+/// A ``StyleOutput`` value with ``Foreground`` values.
 public struct StyledOutputForeground: StyledOutput {
     public var foreground: [Foreground]
 
@@ -75,6 +79,7 @@ public struct StyledOutputForeground: StyledOutput {
     }
 }
 
+/// A ``StyleOutput`` value with a ``Style`` value.
 public struct StyledOutputStyle: StyledOutput {
     public var style: Style
 
@@ -87,6 +92,7 @@ public struct StyledOutputStyle: StyledOutput {
     }
 }
 
+/// A ``StyleOutput`` value with a ``Background`` value.
 public struct StyledOutputBackground: StyledOutput {
     public var background: Background?
 
@@ -102,6 +108,7 @@ public struct StyledOutputBackground: StyledOutput {
     }
 }
 
+/// A ``StyleOutput`` value with a ``String``.
 public struct StyledOutputText: StyledOutput {
     public var text: String
 
@@ -114,10 +121,12 @@ public struct StyledOutputText: StyledOutput {
     }
 }
 
+/// Empty ``StyleOutput``.
 public struct StyledOutputEmpty: StyledOutput {
     public let controlCode: [ANSIControlCode] = []
 }
 
+/// A ``StyleOutput`` value with a list of ``StyleOutput`` values.
 public struct StyledOutputGroup: StyledOutput {
     var group: [any StyledOutput]
 
