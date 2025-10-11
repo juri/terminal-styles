@@ -21,13 +21,11 @@ struct Runner {
             Foreground.underline
         }
 
-        print(
-            StyleBuilder.string {
-                Foreground.colorRGB(.init(intR: 0x40, g: 0xD0, b: 0x90))
-                Foreground.bold
-                styleAndUnderline
-                "Builders, too"
-            }
-        )
+        StyleBuilder.print {
+            Foreground.colorRGB(.init(intR: 0x40, g: 0xD0, b: 0x90))
+            Foreground.bold
+            styleAndUnderline
+            "Builders, too"
+        }
     }
 }
