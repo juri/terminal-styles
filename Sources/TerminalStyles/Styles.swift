@@ -59,13 +59,17 @@ public struct Style {
         return value
     }
 
-    public var ansiCommand: ANSICommand {
+    public var ansiControlCode: ANSIControlCode {
         var codes = self.foreground.map(\.setGraphicsRendition)
         if let background = self.background {
             codes.append(background.setGraphicsRendition)
         }
 
-        return ANSIControlCode.setGraphicsRendition(codes).ansiCommand
+        return ANSIControlCode.setGraphicsRendition(codes)
+    }
+
+    public var ansiCommand: ANSICommand {
+        self.ansiControlCode.ansiCommand
     }
 
     public func apply(to text: String) -> String {
