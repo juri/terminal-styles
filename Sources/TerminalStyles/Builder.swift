@@ -59,10 +59,6 @@ public struct StyleBuilder {
     }
 }
 
-public func buildCodes(@StyleBuilder _ builder: () -> any StyledOutput) -> String {
-    builder().controlCode.map(\.ansiCommand.message).joined()
-}
-
 public protocol StyledOutput {
     var controlCode: [ANSIControlCode] { get }
 }
@@ -128,10 +124,4 @@ public struct StyledOutputGroup: StyledOutput {
     public var controlCode: [ANSIControlCode] {
         group.flatMap(\.controlCode)
     }
-}
-
-enum BuildStyle {
-    case foreground(Foreground?)
-    case background(Background?)
-    case text(String)
 }
