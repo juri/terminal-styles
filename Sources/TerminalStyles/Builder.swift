@@ -101,10 +101,10 @@ public struct StyledOutputBackground: StyledOutput {
     }
 
     public var controlCode: [ANSIControlCode] {
-        guard let background = self.background else {
+        guard let sgr = self.background?.setGraphicsRendition else {
             return []
         }
-        return [ANSIControlCode.setGraphicsRendition([background.setGraphicsRendition])]
+        return [ANSIControlCode.setGraphicsRendition([sgr])]
     }
 }
 

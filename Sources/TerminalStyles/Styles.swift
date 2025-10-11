@@ -27,7 +27,7 @@ public struct Style: Equatable, Sendable {
     /// with the new ones.
     public mutating func add(contentsOf style: Style) {
         self.add(foregrounds: style.foreground)
-        self.background = style.background
+        self.background = style.background ?? self.background
     }
 
     /// Combine this style with another one to create a new `Style`, overriding the values of this style with
@@ -52,8 +52,13 @@ public struct Style: Equatable, Sendable {
     }
 
     /// Add the background to this style.
+    ///
+    /// Adding a nil background has no effect. If you want to use this method to unset the background, use
+    /// ``Background/noBackground``.
     public mutating func add(background: Background?) {
-        self.background = background
+        if let background {
+            self.background = background
+        }
     }
 
     /// Combine this style with the passed-in background to create a new `Style`. The parameter background
@@ -80,8 +85,8 @@ public struct Style: Equatable, Sendable {
     /// Create an `ANSIControlCode` for this style.
     public var ansiControlCode: ANSIControlCode {
         var codes = self.foreground.map(\.setGraphicsRendition)
-        if let background = self.background {
-            codes.append(background.setGraphicsRendition)
+        if let bgSGR = self.background?.setGraphicsRendition {
+            codes.append(bgSGR)
         }
 
         return ANSIControlCode.setGraphicsRendition(codes)
@@ -185,18 +190,23 @@ public enum Foreground: Equatable, Sendable {
 }
 
 /// Background styles you can apply to text.
+///
+/// There's an explicit `noBackground` case you can use to specify that the background has been set to no value.
+/// This can be used to to override a color where an nil background would not do so.
 public enum Background: Equatable, Sendable {
     case color256(Int)
     case colorBasic(BasicPalette)
     case colorBasicBright(BasicPalette)
     case colorRGB(RGBColor8)
+    case noBackground
 
-    public var setGraphicsRendition: SetGraphicsRendition {
+    public var setGraphicsRendition: SetGraphicsRendition? {
         switch self {
         case let .color256(c): .background256(c)
         case let .colorBasic(c): .backgroundBasic(c)
         case let .colorBasicBright(c): .backgroundBasicBright(c)
         case let .colorRGB(c): .backgroundRGB(c)
+        case .noBackground: nil
         }
     }
 }
