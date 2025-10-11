@@ -10,35 +10,35 @@ import TerminalANSI
 /// Build ``StyledOutput`` from ``Foreground``, ``Background``, ``Style``, ``String``
 /// and other ``StyledOutput`` values.
 @resultBuilder
-public struct StyleBuilder {
-    public static func buildBlock() -> StyledOutput { StyledOutputEmpty() }
-    public static func buildBlock(_ components: StyledOutput...) -> StyledOutput {
+public struct StyleBuilder: Sendable {
+    public static func buildBlock() -> any StyledOutput { StyledOutputEmpty() }
+    public static func buildBlock(_ components: (any StyledOutput)...) -> any StyledOutput {
         StyledOutputGroup(group: components)
     }
-    public static func buildPartialBlock(first: StyledOutput) -> StyledOutput { first }
-    public static func buildPartialBlock(accumulated: StyledOutput, next: StyledOutput) -> StyledOutput {
+    public static func buildPartialBlock(first: any StyledOutput) -> any StyledOutput { first }
+    public static func buildPartialBlock(accumulated: any StyledOutput, next: any StyledOutput) -> any StyledOutput {
         StyledOutputGroup(group: [accumulated, next])
     }
 
-    public static func buildEither(first component: StyledOutput) -> StyledOutput { component }
-    public static func buildEither(second component: StyledOutput) -> StyledOutput { component }
-    public static func buildExpression(_ expression: String) -> StyledOutput { StyledOutputText(text: expression) }
-    public static func buildExpression(_ expression: Foreground) -> StyledOutput {
+    public static func buildEither(first component: any StyledOutput) -> any StyledOutput { component }
+    public static func buildEither(second component: any StyledOutput) -> any StyledOutput { component }
+    public static func buildExpression(_ expression: String) -> any StyledOutput { StyledOutputText(text: expression) }
+    public static func buildExpression(_ expression: Foreground) -> any StyledOutput {
         StyledOutputForeground(foreground: [expression])
     }
-    public static func buildExpression(_ expression: [Foreground]) -> StyledOutput {
+    public static func buildExpression(_ expression: [Foreground]) -> any StyledOutput {
         StyledOutputForeground(foreground: expression)
     }
-    public static func buildExpression(_ expression: Background) -> StyledOutput {
+    public static func buildExpression(_ expression: Background) -> any StyledOutput {
         StyledOutputBackground(background: expression)
     }
     public static func buildExpression(_ expression: Style) -> any StyledOutput {
         StyledOutputStyle(style: expression)
     }
-    public static func buildExpression(_ expression: StyledOutput?) -> StyledOutput {
+    public static func buildExpression(_ expression: (any StyledOutput)?) -> any StyledOutput {
         expression.map { StyledOutputGroup(group: [$0]) } ?? StyledOutputEmpty()
     }
-    public static func buildIf(_ element: StyledOutput?) -> StyledOutput { element ?? StyledOutputEmpty() }
+    public static func buildIf(_ element: (any StyledOutput)?) -> any StyledOutput { element ?? StyledOutputEmpty() }
 
     public static func styledOutput(@StyleBuilder _ builder: () -> any StyledOutput) -> any StyledOutput {
         builder()
