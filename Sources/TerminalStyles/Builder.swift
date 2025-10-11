@@ -4,6 +4,7 @@
 //  Created by Juri Pakaste on 10.10.2025.
 //
 
+import Foundation
 import TerminalANSI
 
 @resultBuilder
@@ -43,6 +44,18 @@ public struct StyleBuilder {
 
     public static func string(@StyleBuilder _ builder: () -> any StyledOutput) -> String {
         builder().controlCode.map(\.ansiCommand.message).joined()
+    }
+
+    public static func print(@StyleBuilder _ builder: () -> any StyledOutput) {
+        Swift.print(self.string(builder))
+    }
+
+    public static func print(to stream: inout some TextOutputStream, @StyleBuilder _ builder: () -> any StyledOutput) {
+        Swift.print(self.string(builder), to: &stream)
+    }
+
+    public static func print(to fileHandle: FileHandle, @StyleBuilder _ builder: () -> any StyledOutput) throws {
+        try fileHandle.write(contentsOf: Data(self.string(builder).utf8))
     }
 }
 
