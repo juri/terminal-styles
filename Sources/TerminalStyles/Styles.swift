@@ -9,7 +9,7 @@ import TerminalANSI
 /// `Style` defines a background and a foreground for text output to terminal.
 ///
 /// Both background and foreground are optional. You can stack multiple foreground styles.
-public struct Style {
+public struct Style: Equatable, Sendable {
     /// Background style.
     public var background: Background?
     /// Foreground styles.
@@ -99,7 +99,7 @@ public struct Style {
 }
 
 /// Foreground styles you can apply to text.
-public enum Foreground {
+public enum Foreground: Equatable, Sendable {
     case bold
     case color256(Int)
     case colorBasic(BasicPalette)
@@ -185,7 +185,7 @@ public enum Foreground {
 }
 
 /// Background styles you can apply to text.
-public enum Background {
+public enum Background: Equatable, Sendable {
     case color256(Int)
     case colorBasic(BasicPalette)
     case colorBasicBright(BasicPalette)
