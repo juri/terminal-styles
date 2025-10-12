@@ -6,6 +6,25 @@
 
 import TerminalANSI
 
+/// `GradientHorizontalRGB` is a type that describes a linear gradient that progresses horizontally on a text line.
+/// Each `RGBColor8` value in the `points` array represents one character on the line.
+public struct GradientHorizontalRGB {
+    public let points: [RGBColor8]
+
+    public init(points: [RGBColor8]) {
+        self.points = points
+    }
+
+    public init(hslPoints: [HSLColor]) {
+        var rgbPoints = hslPoints.map(RGBColor8.init(hsl:))
+        self.init(points: rgbPoints)
+    }
+
+    public init(hslGradient: GradientHorizontalHSL) {
+        self.init(hslPoints: hslGradient.points)
+    }
+}
+
 /// `GradientHorizontalHSL` is a type that describes a linear gradient that progresses horizontally on a text line.
 /// Each `HSLColor` value in the `points` array represents one character on the line.
 public struct GradientHorizontalHSL {
