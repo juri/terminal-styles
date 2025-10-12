@@ -9,7 +9,11 @@ import TerminalANSI
 /// `GradientHorizontalHSL` is a type that describes a linear gradient that progresses horizontally on a text line.
 /// Each `HSLColor` value in the `points` array represents one character on the line.
 public struct GradientHorizontalHSL {
-    let points: [HSLColor]
+    public let points: [HSLColor]
+
+    public init(points: [HSLColor]) {
+        self.points = points
+    }
 }
 
 /// `createGradient` creates a `GradientHorizontalHSL` for a line of `length` characters.
