@@ -30,3 +30,10 @@ StyleBuilder.print {
     "Builders, too"
 }
 ```
+
+## Documentation
+
+[Documentation] and `Package.swift` snippets are available at [Swift Package Index].
+
+[Documentation]: https://swiftpackageindex.com/juri/terminal-styles/documentation/terminalstyles
+[Swift Package Index]: https://swiftpackageindex.com/juri/terminal-styles
