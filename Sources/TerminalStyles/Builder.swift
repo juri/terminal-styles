@@ -9,6 +9,9 @@ import TerminalANSI
 
 /// Build ``StyledOutput`` from ``Foreground``, ``Background``, ``Style``, ``String``
 /// and other ``StyledOutput`` values.
+///
+/// Use ``string(_:)`` to generate a printable string, or call directly one of the static `print` methods
+/// to print it out.
 @resultBuilder
 public struct StyleBuilder: Sendable {
     public static func buildBlock() -> any StyledOutput { StyledOutputEmpty() }
@@ -40,22 +43,27 @@ public struct StyleBuilder: Sendable {
     }
     public static func buildIf(_ element: (any StyledOutput)?) -> any StyledOutput { element ?? StyledOutputEmpty() }
 
+    /// Generate a ``StyledOutput`` value from `builder`.
     public static func styledOutput(@StyleBuilder _ builder: () -> any StyledOutput) -> any StyledOutput {
         builder()
     }
 
+    /// Generate a `String` value from `builder`.
     public static func string(@StyleBuilder _ builder: () -> any StyledOutput) -> String {
         builder().controlCode.map(\.ansiCommand.message).joined()
     }
 
+    /// Print out the string generated from `builder`.
     public static func print(@StyleBuilder _ builder: () -> any StyledOutput) {
         Swift.print(self.string(builder))
     }
 
+    /// Print out the string generated from `builder` to `stream`.
     public static func print(to stream: inout some TextOutputStream, @StyleBuilder _ builder: () -> any StyledOutput) {
         Swift.print(self.string(builder), to: &stream)
     }
 
+    /// Print out the string generated from `builder` to `fileHandle`.
     public static func print(to fileHandle: FileHandle, @StyleBuilder _ builder: () -> any StyledOutput) throws {
         try fileHandle.write(contentsOf: Data(self.string(builder).utf8))
     }
