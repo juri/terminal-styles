@@ -1,3 +1,6 @@
+[![Build](https://github.com/juri/terminal-styles/actions/workflows/ci.yml/badge.svg)](https://github.com/juri/terminal-styles/actions/workflows/ci.yml)
+[![Build](https://github.com/juri/terminal-styles/actions/workflows/format.yml/badge.svg)](https://github.com/juri/terminal-styles/actions/workflows/format.yml)
+
 # terminal-styles
 
 ``terminal-styles`` is a small Swift library for building up terminal output styles. It builds on [terminal-ansi].
