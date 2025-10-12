@@ -1,5 +1,7 @@
 [![Build](https://github.com/juri/terminal-styles/actions/workflows/ci.yml/badge.svg)](https://github.com/juri/terminal-styles/actions/workflows/ci.yml)
 [![Build](https://github.com/juri/terminal-styles/actions/workflows/format.yml/badge.svg)](https://github.com/juri/terminal-styles/actions/workflows/format.yml)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fjuri%2Fterminal-styles%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/juri/terminal-styles)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fjuri%2Fterminal-styles%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/juri/terminal-styles)
 
 # terminal-styles
 
