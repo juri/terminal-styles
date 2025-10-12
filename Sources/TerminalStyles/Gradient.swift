@@ -6,13 +6,13 @@
 
 import TerminalANSI
 
-/// `GradientHorizontal` is a type that describes a linear gradient that progresses horizontally on a text line.
+/// `GradientHorizontalHSL` is a type that describes a linear gradient that progresses horizontally on a text line.
 /// Each `HSLColor` value in the `points` array represents one character on the line.
-public struct GradientHorizontal {
+public struct GradientHorizontalHSL {
     let points: [HSLColor]
 }
 
-/// `createGradient` creates a `GradientHorizontal` for a line of `length` characters.
+/// `createGradient` creates a `GradientHorizontalHSL` for a line of `length` characters.
 /// - Parameters:
 ///     - points: An array of tuples where the `Double` value is in the range 0...1 and represents
 ///               a fractional location on the line, and the `HSLColor` is a color for that point.
@@ -20,9 +20,9 @@ public struct GradientHorizontal {
 ///               start of the line to that point is solid. If the Double value in the last `point`
 ///               is less than 1.0, the color from that point to the end of the line is solid.
 ///               If there's more than two values, the gradient progresses through those points.
-/// - Returns: A ``GradientHorizontal`` with `length` values in the ``GradientHorizontal/points`` array.
+/// - Returns: A ``GradientHorizontalHSL`` with `length` values in the ``GradientHorizontalHSL/points`` array.
 ///
-public func createGradient(length: Int, points: [(Double, HSLColor)]) -> GradientHorizontal? {
+public func createGradient(length: Int, points: [(Double, HSLColor)]) -> GradientHorizontalHSL? {
     guard length > 0, !points.isEmpty else { return nil }
 
     // Sort points by position to ensure proper interpolation
@@ -36,7 +36,7 @@ public func createGradient(length: Int, points: [(Double, HSLColor)]) -> Gradien
         gradientColors.append(color)
     }
 
-    return GradientHorizontal(points: gradientColors)
+    return GradientHorizontalHSL(points: gradientColors)
 }
 
 /// Helper function to interpolate color at a given position
