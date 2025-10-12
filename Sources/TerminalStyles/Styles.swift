@@ -105,34 +105,49 @@ public struct Style: Equatable, Sendable {
 
 /// Foreground styles you can apply to text.
 public enum Foreground: Equatable, Sendable {
+    case blink
     case bold
     case color256(Int)
     case colorBasic(BasicPalette)
     case colorBasicBright(BasicPalette)
     case colorRGB(RGBColor8)
+    case crossOut
+    case faint
     case italic
+    case overline
+    case reverse
     case underline
 
     public var setGraphicsRendition: SetGraphicsRendition {
         switch self {
+        case .blink: .blink
         case .bold: .bold
         case let .color256(c): .text256(c)
         case let .colorBasic(c): .textBasic(c)
         case let .colorBasicBright(c): .textBasicBright(c)
         case let .colorRGB(c): .textRGB(c)
+        case .crossOut: .crossOut
+        case .faint: .faint
         case .italic: .italic
+        case .overline: .overline
+        case .reverse: .reverse
         case .underline: .underline
         }
     }
 
     var isAnyColor: Bool {
         switch self {
+        case .blink: false
         case .bold: false
         case .color256: true
         case .colorBasic: true
         case .colorBasicBright: true
         case .colorRGB: true
+        case .crossOut: false
+        case .faint: false
         case .italic: false
+        case .overline: false
+        case .reverse: false
         case .underline: false
         }
     }
@@ -157,32 +172,51 @@ public enum Foreground: Equatable, Sendable {
     /// This method removes any existing `Foreground` values from `list` where they
     /// conflict with the values in `foregrounds`.
     static func add(_ foregrounds: [Foreground], to list: inout [Foreground]) {
+        var blink: Foreground?
         var bold: Foreground?
         var color: Foreground?
+        var crossOut: Foreground?
+        var faint: Foreground?
         var italic: Foreground?
+        var overline: Foreground?
+        var reverse: Foreground?
         var underline: Foreground?
 
         for f in foregrounds {
             switch f {
+            case .blink: blink = f
             case .bold: bold = f
             case .color256, .colorRGB, .colorBasic, .colorBasicBright: color = f
+            case .crossOut: crossOut = f
+            case .faint: faint = f
             case .italic: italic = f
+            case .overline: overline = f
+            case .reverse: reverse = f
             case .underline: underline = f
             }
         }
 
         var filtered = list.filter {
             switch $0 {
+            case .blink: blink == nil
             case .bold: bold == nil
             case .color256, .colorRGB, .colorBasic, .colorBasicBright: color == nil
+            case .crossOut: crossOut == nil
+            case .faint: faint == nil
             case .italic: italic == nil
+            case .overline: overline == nil
+            case .reverse: reverse == nil
             case .underline: underline == nil
             }
         }
 
+        if let blink { filtered.append(blink) }
         if let bold { filtered.append(bold) }
         if let color { filtered.append(color) }
+        if let crossOut { filtered.append(crossOut) }
         if let italic { filtered.append(italic) }
+        if let overline { filtered.append(overline) }
+        if let reverse { filtered.append(reverse) }
         if let underline { filtered.append(underline) }
 
         list = filtered
