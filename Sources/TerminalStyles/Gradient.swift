@@ -24,6 +24,24 @@ public struct GradientHorizontalRGB {
         self.init(hslPoints: hslGradient.points)
     }
 
+    /// Create a `GradientHorizontalRGB` for a line of `length` characters.
+    ///
+    /// The gradient is created in the HSL colorspace to avoid unwanted grayness.
+    ///
+    /// - Parameters:
+    ///     - points: An array of tuples where the `Double` value is in the range 0...1 and represents
+    ///               a fractional location on the line, and the `RGBColor8` is a color for that point.
+    ///               If the Double value in the first `point` is larger than 0.0, the color from the
+    ///               start of the line to that point is solid. If the Double value in the last `point`
+    ///               is less than 1.0, the color from that point to the end of the line is solid.
+    ///               If there's more than two values, the gradient progresses through those points.
+    /// - Returns: A ``GradientHorizontalRGB`` with `length` values in the ``GradientHorizontalRGB/points`` array.
+    public init?(length: Int, points: [(Double, RGBColor8)]) {
+        let hslPoints = points.map { ($0, HSLColor(rgb: $1)) }
+        guard let hslGradient = GradientHorizontalHSL(length: length, points: hslPoints) else { return nil }
+        self.init(hslGradient: hslGradient)
+    }
+
     public struct UnequalGradientLengthsError: Error {}
 
     public static func applyGradients(
