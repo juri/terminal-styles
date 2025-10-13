@@ -24,6 +24,8 @@ public struct GradientHorizontalRGB {
         self.init(hslPoints: hslGradient.points)
     }
 
+    public struct UnequalGradientLengthsError: Error {}
+
     /// Applies the two gradients to `text`.
     ///
     /// If both `foreground` and `background` are specified, they must have equal number of points.
@@ -32,16 +34,16 @@ public struct GradientHorizontalRGB {
     /// of the line. Similarly `fillWithLeadingCharacter` fills out the trailing edge of the line.
     /// If both are specified, an undersized line is centered.
     public static func applyGradients(
-        text: String,
+        text: some StringProtocol,
         foreground: GradientHorizontalRGB?,
         background: GradientHorizontalRGB?,
         fillWithLeadingCharacter fillerLeading: Character? = nil,
         fillWithTrailingCharacter fillerTrailing: Character? = " ",
         reset: Bool = true,
-    ) -> String? {
+    ) throws -> String {
         // Check that both gradients have the same number of points if both are provided
         if let fg = foreground, let bg = background, fg.points.count != bg.points.count {
-            return nil
+            throw UnequalGradientLengthsError()
         }
 
         // Get the gradient with the most points to determine the expected length
@@ -49,7 +51,7 @@ public struct GradientHorizontalRGB {
 
         // If no gradients are provided, return the original text
         guard gradientLength > 0 else {
-            return text
+            return String(text)
         }
 
         let characters = Array(text)
