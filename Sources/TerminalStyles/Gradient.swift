@@ -26,6 +26,31 @@ public struct GradientHorizontalRGB {
 
     public struct UnequalGradientLengthsError: Error {}
 
+    public static func applyGradients(
+        lines: [some StringProtocol],
+        foreground: GradientHorizontalRGB?,
+        background: GradientHorizontalRGB?,
+        fillWithLeadingCharacter fillerLeading: Character? = nil,
+        fillWithTrailingCharacter fillerTrailing: Character? = " ",
+        reset: Bool = true,
+    ) throws -> String {
+        var outputLines = [String]()
+
+        for line in lines {
+            let outputLine = try self.applyGradients(
+                text: String(line),
+                foreground: foreground,
+                background: background,
+                fillWithLeadingCharacter: fillerLeading,
+                fillWithTrailingCharacter: fillerTrailing,
+                reset: reset,
+            )
+            outputLines.append(outputLine)
+        }
+
+        return outputLines.joined(separator: "\n")
+    }
+
     /// Applies the two gradients to `text`.
     ///
     /// If both `foreground` and `background` are specified, they must have equal number of points.
