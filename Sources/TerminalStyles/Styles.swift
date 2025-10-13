@@ -98,8 +98,19 @@ public struct Style: Equatable, Sendable {
     }
 
     /// Apply this style to `text` to create a styled `String`.
-    public func apply(to text: String) -> String {
-        "\(self.ansiCommand.message)\(text)\(ANSIControlCode.setGraphicsRendition([.reset]).ansiCommand.message)"
+    ///
+    /// - Parameters:
+    ///     - text: The text to apply the style to
+    ///     - terminate: If true, a SGR reset will be added to the end of the output string to clear all text styling.
+    public func apply(
+        to text: String,
+        reset: Bool = true,
+    ) -> String {
+        var output = "\(self.ansiCommand.message)\(text)"
+        if reset {
+            output.append(ANSIControlCode.setGraphicsRendition([.reset]).ansiCommand.message)
+        }
+        return output
     }
 }
 
