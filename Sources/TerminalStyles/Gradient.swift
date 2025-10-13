@@ -142,33 +142,33 @@ public struct GradientHorizontalHSL {
     public init(points: [HSLColor]) {
         self.points = points
     }
-}
 
-/// `createGradient` creates a `GradientHorizontalHSL` for a line of `length` characters.
-/// - Parameters:
-///     - points: An array of tuples where the `Double` value is in the range 0...1 and represents
-///               a fractional location on the line, and the `HSLColor` is a color for that point.
-///               If the Double value in the first `point` is larger than 0.0, the color from the
-///               start of the line to that point is solid. If the Double value in the last `point`
-///               is less than 1.0, the color from that point to the end of the line is solid.
-///               If there's more than two values, the gradient progresses through those points.
-/// - Returns: A ``GradientHorizontalHSL`` with `length` values in the ``GradientHorizontalHSL/points`` array.
-///
-public func createGradient(length: Int, points: [(Double, HSLColor)]) -> GradientHorizontalHSL? {
-    guard length > 0, !points.isEmpty else { return nil }
+    /// Create a `GradientHorizontalHSL` for a line of `length` characters.
+    /// - Parameters:
+    ///     - points: An array of tuples where the `Double` value is in the range 0...1 and represents
+    ///               a fractional location on the line, and the `HSLColor` is a color for that point.
+    ///               If the Double value in the first `point` is larger than 0.0, the color from the
+    ///               start of the line to that point is solid. If the Double value in the last `point`
+    ///               is less than 1.0, the color from that point to the end of the line is solid.
+    ///               If there's more than two values, the gradient progresses through those points.
+    /// - Returns: A ``GradientHorizontalHSL`` with `length` values in the ``GradientHorizontalHSL/points`` array.
+    ///
+    public init?(length: Int, points: [(Double, HSLColor)]) {
+        guard length > 0, !points.isEmpty else { return nil }
 
-    // Sort points by position to ensure proper interpolation
-    let sortedPoints = points.sorted { $0.0 < $1.0 }
+        // Sort points by position to ensure proper interpolation
+        let sortedPoints = points.sorted { $0.0 < $1.0 }
 
-    var gradientColors: [HSLColor] = []
+        var gradientColors: [HSLColor] = []
 
-    for i in 0..<length {
-        let position = Double(i) / Double(length - 1)
-        let color = interpolateColor(at: position, points: sortedPoints)
-        gradientColors.append(color)
+        for i in 0..<length {
+            let position = Double(i) / Double(length - 1)
+            let color = interpolateColor(at: position, points: sortedPoints)
+            gradientColors.append(color)
+        }
+
+        self.init(points: gradientColors)
     }
-
-    return GradientHorizontalHSL(points: gradientColors)
 }
 
 /// Helper function to interpolate color at a given position
