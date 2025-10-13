@@ -16,7 +16,7 @@ public struct GradientHorizontalRGB {
     }
 
     public init(hslPoints: [HSLColor]) {
-        var rgbPoints = hslPoints.map(RGBColor8.init(hsl:))
+        let rgbPoints = hslPoints.map(RGBColor8.init(hsl:))
         self.init(points: rgbPoints)
     }
 
