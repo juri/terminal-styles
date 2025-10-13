@@ -23,6 +23,115 @@ public struct GradientHorizontalRGB {
     public init(hslGradient: GradientHorizontalHSL) {
         self.init(hslPoints: hslGradient.points)
     }
+
+    /// Applies the two gradients to `text`.
+    ///
+    /// If both `foreground` and `background` are specified, they must have equal number of points.
+    /// If `fillWithLeadingCharacter` is specified and the length of the line is less than the number
+    /// of elements in ``GradientHorizontalRGB/points``, the character is used to fill the leading edge
+    /// of the line. Similarly `fillWithLeadingCharacter` fills out the trailing edge of the line.
+    /// If both are specified, an undersized line is centered.
+    public static func applyGradients(
+        text: String,
+        foreground: GradientHorizontalRGB?,
+        background: GradientHorizontalRGB?,
+        fillWithLeadingCharacter fillerLeading: Character? = nil,
+        fillWithTrailingCharacter fillerTrailing: Character? = " ",
+        reset: Bool = true,
+    ) -> String? {
+        // Check that both gradients have the same number of points if both are provided
+        if let fg = foreground, let bg = background, fg.points.count != bg.points.count {
+            return nil
+        }
+
+        // Get the gradient with the most points to determine the expected length
+        let gradientLength = max(foreground?.points.count ?? 0, background?.points.count ?? 0)
+
+        // If no gradients are provided, return the original text
+        guard gradientLength > 0 else {
+            return text
+        }
+
+        let characters = Array(text)
+        let textLength = characters.count
+
+        // Determine the working text with proper padding/centering
+        let workingText: [Character]
+        let startOffset: Int
+
+        if textLength < gradientLength {
+            // Text is shorter than gradient, need to pad
+            let totalPadding = gradientLength - textLength
+
+            if let leading = fillerLeading, let trailing = fillerTrailing {
+                // Center the text
+                let leadingPadding = totalPadding / 2
+                let trailingPadding = totalPadding - leadingPadding
+                workingText =
+                    Array(repeating: leading, count: leadingPadding) + characters
+                    + Array(repeating: trailing, count: trailingPadding)
+                startOffset = 0
+            } else if let leading = fillerLeading {
+                // Pad with leading character
+                workingText = Array(repeating: leading, count: totalPadding) + characters
+                startOffset = 0
+            } else if let trailing = fillerTrailing {
+                // Pad with trailing character
+                workingText = characters + Array(repeating: trailing, count: totalPadding)
+                startOffset = 0
+            } else {
+                // No padding, just use the text as-is and center it in the gradient
+                workingText = characters
+                startOffset = (gradientLength - textLength) / 2
+            }
+        } else {
+            // Text is longer than or equal to gradient
+            workingText = characters
+            startOffset = 0
+        }
+
+        var result = ""
+        let maxLength = max(workingText.count, gradientLength)
+
+        for i in 0..<maxLength {
+            let textIndex = i - startOffset
+            let gradientIndex = min(i, gradientLength - 1)
+
+            // Get the character to render (or space if beyond text bounds)
+            let char: Character
+            if textIndex >= 0 && textIndex < workingText.count {
+                char = workingText[textIndex]
+            } else {
+                char = " "
+            }
+
+            // Build the graphics rendition commands for this character
+            var renditions: [SetGraphicsRendition] = []
+
+            if let fg = foreground, gradientIndex < fg.points.count {
+                renditions.append(.textRGB(fg.points[gradientIndex]))
+            }
+
+            if let bg = background, gradientIndex < bg.points.count {
+                renditions.append(.backgroundRGB(bg.points[gradientIndex]))
+            }
+
+            // Apply the color and append the character
+            if !renditions.isEmpty {
+                let colorCode = ANSIControlCode.setGraphicsRendition(renditions)
+                result += colorCode.ansiCommand.message
+            }
+
+            result += String(char)
+        }
+
+        if reset {
+            let resetCode = ANSIControlCode.setGraphicsRendition([.reset])
+            result += resetCode.ansiCommand.message
+        }
+
+        return result
+    }
 }
 
 /// `GradientHorizontalHSL` is a type that describes a linear gradient that progresses horizontally on a text line.
