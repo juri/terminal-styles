@@ -29,16 +29,16 @@ public struct GradientHorizontalRGB {
     /// The gradient is created in the HSL colorspace to avoid unwanted grayness.
     ///
     /// - Parameters:
-    ///     - points: An array of tuples where the `Double` value is in the range 0...1 and represents
-    ///               a fractional location on the line, and the `RGBColor8` is a color for that point.
-    ///               If the Double value in the first `point` is larger than 0.0, the color from the
-    ///               start of the line to that point is solid. If the Double value in the last `point`
-    ///               is less than 1.0, the color from that point to the end of the line is solid.
-    ///               If there's more than two values, the gradient progresses through those points.
+    ///     - stops: An array of tuples where the `Double` value is in the range 0...1 and represents
+    ///              a fractional location on the line, and the `RGBColor8` is a color for that point.
+    ///              If the Double value in the first `point` is larger than 0.0, the color from the
+    ///              start of the line to that point is solid. If the Double value in the last `point`
+    ///              is less than 1.0, the color from that point to the end of the line is solid.
+    ///              If there's more than two values, the gradient progresses through those stops.
     /// - Returns: A ``GradientHorizontalRGB`` with `length` values in the ``GradientHorizontalRGB/points`` array.
-    public init?(length: Int, points: [(Double, RGBColor8)]) {
-        let hslPoints = points.map { ($0, HSLColor(rgb: $1)) }
-        guard let hslGradient = GradientHorizontalHSL(length: length, points: hslPoints) else { return nil }
+    public init?(length: Int, stops: [(Double, RGBColor8)]) {
+        let hslPoints = stops.map { ($0, HSLColor(rgb: $1)) }
+        guard let hslGradient = GradientHorizontalHSL(length: length, stops: hslPoints) else { return nil }
         self.init(hslGradient: hslGradient)
     }
 
@@ -190,19 +190,19 @@ public struct GradientHorizontalHSL {
 
     /// Create a `GradientHorizontalHSL` for a line of `length` characters.
     /// - Parameters:
-    ///     - points: An array of tuples where the `Double` value is in the range 0...1 and represents
-    ///               a fractional location on the line, and the `HSLColor` is a color for that point.
-    ///               If the Double value in the first `point` is larger than 0.0, the color from the
-    ///               start of the line to that point is solid. If the Double value in the last `point`
-    ///               is less than 1.0, the color from that point to the end of the line is solid.
-    ///               If there's more than two values, the gradient progresses through those points.
+    ///     - stops: An array of tuples where the `Double` value is in the range 0...1 and represents
+    ///              a fractional location on the line, and the `HSLColor` is a color for that point.
+    ///              If the Double value in the first `point` is larger than 0.0, the color from the
+    ///              start of the line to that point is solid. If the Double value in the last `point`
+    ///              is less than 1.0, the color from that point to the end of the line is solid.
+    ///              If there's more than two values, the gradient progresses through those stops.
     /// - Returns: A ``GradientHorizontalHSL`` with `length` values in the ``GradientHorizontalHSL/points`` array.
     ///
-    public init?(length: Int, points: [(Double, HSLColor)]) {
-        guard length > 0, !points.isEmpty else { return nil }
+    public init?(length: Int, stops: [(Double, HSLColor)]) {
+        guard length > 0, !stops.isEmpty else { return nil }
 
         // Sort points by position to ensure proper interpolation
-        let sortedPoints = points.sorted { $0.0 < $1.0 }
+        let sortedPoints = stops.sorted { $0.0 < $1.0 }
 
         var gradientColors: [HSLColor] = []
 
