@@ -6,15 +6,63 @@
 
 import TerminalANSI
 
-/// `GradientHorizontalRGB` is a type that describes a linear gradient that progresses horizontally on a text line.
-/// Each `RGBColor8` value in the `points` array represents one character on the line.
-public struct GradientHorizontalRGB {
-    public let points: [RGBColor8]
+public protocol PerCharacterStyler {
+    func styleForPosition(x: Int, y: Int) -> Style
+}
 
-    public init(points: [RGBColor8]) {
-        self.points = points
+extension PerCharacterStyler {
+    public func apply(
+        lines: some Sequence<some StringProtocol>,
+        addNewLines: Bool = true,
+        reset: Bool = true,
+    ) -> String {
+        return zip(0..., lines).map { index, line in
+            self.apply(line: line, lineIndex: index, reset: reset)
+        }.joined()
     }
 
+    public func apply(
+        line: some StringProtocol,
+        lineIndex: Int,
+        addNewline: Bool = true,
+        reset: Bool = true,
+    ) -> String {
+        var output = zip(0..., line).map { index, char in
+            let style = self.styleForPosition(x: index, y: lineIndex).ansiCommand.message
+            return "\(style)\(char)"
+        }.joined()
+        if reset {
+            output.append(ANSIControlCode.setGraphicsRendition([.reset]).ansiCommand.message)
+        }
+        if addNewline {
+            output.append("\n")
+        }
+        return output
+    }
+}
+
+public struct JoinedPerCharacterStyler<S1: PerCharacterStyler, S2: PerCharacterStyler>: PerCharacterStyler {
+    public let styler1: S1
+    public let styler2: S2
+
+    public init(styler1: S1, styler2: S2) {
+        self.styler1 = styler1
+        self.styler2 = styler2
+    }
+
+    public func styleForPosition(x: Int, y: Int) -> Style {
+        let style1 = self.styler1.styleForPosition(x: x, y: y)
+        let style2 = self.styler2.styleForPosition(x: x, y: y)
+        return style1.adding(contentsOf: style2)
+    }
+}
+
+public protocol LinearGradient {
+    var points: [RGBColor8] { get }
+    init(points: [RGBColor8])
+}
+
+extension LinearGradient {
     public init(hslPoints: [HSLColor]) {
         let rgbPoints = hslPoints.map(RGBColor8.init(hsl:))
         self.init(points: rgbPoints)
@@ -24,158 +72,36 @@ public struct GradientHorizontalRGB {
         self.init(hslPoints: hslGradient.points)
     }
 
-    /// Create a `GradientHorizontalRGB` for a line of `length` characters.
-    ///
-    /// The gradient is created in the HSL colorspace to avoid unwanted grayness.
-    ///
-    /// - Parameters:
-    ///     - stops: An array of tuples where the `Double` value is in the range 0...1 and represents
-    ///              a fractional location on the line, and the `RGBColor8` is a color for that point.
-    ///              If the Double value in the first `point` is larger than 0.0, the color from the
-    ///              start of the line to that point is solid. If the Double value in the last `point`
-    ///              is less than 1.0, the color from that point to the end of the line is solid.
-    ///              If there's more than two values, the gradient progresses through those stops.
-    /// - Returns: A ``GradientHorizontalRGB`` with `length` values in the ``GradientHorizontalRGB/points`` array.
     public init?(length: Int, stops: [(Double, RGBColor8)]) {
         let hslPoints = stops.map { ($0, HSLColor(rgb: $1)) }
         guard let hslGradient = GradientHorizontalHSL(length: length, stops: hslPoints) else { return nil }
         self.init(hslGradient: hslGradient)
     }
+}
 
-    public struct UnequalGradientLengthsError: Error {}
+public struct HorizontalForegroundPerCharacterStyler: PerCharacterStyler, LinearGradient {
+    public let points: [RGBColor8]
 
-    public static func applyGradients(
-        lines: [some StringProtocol],
-        foreground: GradientHorizontalRGB?,
-        background: GradientHorizontalRGB?,
-        fillWithLeadingCharacter fillerLeading: Character? = nil,
-        fillWithTrailingCharacter fillerTrailing: Character? = " ",
-        reset: Bool = true,
-    ) throws -> String {
-        var outputLines = [String]()
-
-        for line in lines {
-            let outputLine = try self.applyGradients(
-                text: String(line),
-                foreground: foreground,
-                background: background,
-                fillWithLeadingCharacter: fillerLeading,
-                fillWithTrailingCharacter: fillerTrailing,
-                reset: reset,
-            )
-            outputLines.append(outputLine)
-        }
-
-        return outputLines.joined(separator: "\n")
+    public init(points: [RGBColor8]) {
+        self.points = points
     }
 
-    /// Applies the two gradients to `text`.
-    ///
-    /// If both `foreground` and `background` are specified, they must have equal number of points.
-    /// If `fillWithLeadingCharacter` is specified and the length of the line is less than the number
-    /// of elements in ``GradientHorizontalRGB/points``, the character is used to fill the leading edge
-    /// of the line. Similarly `fillWithLeadingCharacter` fills out the trailing edge of the line.
-    /// If both are specified, an undersized line is centered.
-    public static func applyGradients(
-        text: some StringProtocol,
-        foreground: GradientHorizontalRGB?,
-        background: GradientHorizontalRGB?,
-        fillWithLeadingCharacter fillerLeading: Character? = nil,
-        fillWithTrailingCharacter fillerTrailing: Character? = " ",
-        reset: Bool = true,
-    ) throws -> String {
-        // Check that both gradients have the same number of points if both are provided
-        if let fg = foreground, let bg = background, fg.points.count != bg.points.count {
-            throw UnequalGradientLengthsError()
-        }
+    public func styleForPosition(x: Int, y: Int) -> Style {
+        let index = max(0, min(x, points.count - 1))
+        return Style(foreground: [.colorRGB(self.points[index])])
+    }
+}
 
-        // Get the gradient with the most points to determine the expected length
-        let gradientLength = max(foreground?.points.count ?? 0, background?.points.count ?? 0)
+public struct HorizontalBackgroundPerCharacterStyler: PerCharacterStyler, LinearGradient {
+    public let points: [RGBColor8]
 
-        // If no gradients are provided, return the original text
-        guard gradientLength > 0 else {
-            return String(text)
-        }
+    public init(points: [RGBColor8]) {
+        self.points = points
+    }
 
-        let characters = Array(text)
-        let textLength = characters.count
-
-        // Determine the working text with proper padding/centering
-        let workingText: [Character]
-        let startOffset: Int
-
-        if textLength < gradientLength {
-            // Text is shorter than gradient, need to pad
-            let totalPadding = gradientLength - textLength
-
-            if let leading = fillerLeading, let trailing = fillerTrailing {
-                // Center the text
-                let leadingPadding = totalPadding / 2
-                let trailingPadding = totalPadding - leadingPadding
-                workingText =
-                    Array(repeating: leading, count: leadingPadding) + characters
-                    + Array(repeating: trailing, count: trailingPadding)
-                startOffset = 0
-            } else if let leading = fillerLeading {
-                // Pad with leading character
-                workingText = Array(repeating: leading, count: totalPadding) + characters
-                startOffset = 0
-            } else if let trailing = fillerTrailing {
-                // Pad with trailing character
-                workingText = characters + Array(repeating: trailing, count: totalPadding)
-                startOffset = 0
-            } else {
-                // No padding, just use the text as-is and center it in the gradient
-                workingText = characters
-                startOffset = (gradientLength - textLength) / 2
-            }
-        } else {
-            // Text is longer than or equal to gradient
-            workingText = characters
-            startOffset = 0
-        }
-
-        var result = ""
-        let maxLength = max(workingText.count, gradientLength)
-
-        for i in 0..<maxLength {
-            let textIndex = i - startOffset
-            let gradientIndex = min(i, gradientLength - 1)
-
-            // Get the character to render (or space if beyond text bounds)
-            let char: Character
-            if textIndex >= 0 && textIndex < workingText.count {
-                char = workingText[textIndex]
-            } else {
-                char = " "
-            }
-
-            // Build the graphics rendition commands for this character
-            var renditions: [SetGraphicsRendition] = []
-
-            if let fg = foreground, gradientIndex < fg.points.count {
-                renditions.append(.textRGB(fg.points[gradientIndex]))
-            }
-
-            if let bg = background, gradientIndex < bg.points.count {
-                renditions.append(.backgroundRGB(bg.points[gradientIndex]))
-            }
-
-            // Apply the color and append the character
-            if !renditions.isEmpty {
-                let colorCode = ANSIControlCode.setGraphicsRendition(renditions)
-                result += colorCode.ansiCommand.message
-            }
-
-            result += String(char)
-        }
-
-        if reset {
-            let resetCode = ANSIControlCode.setGraphicsRendition([.reset])
-            result += resetCode.ansiCommand.message
-        }
-
-        return result
+    public func styleForPosition(x: Int, y: Int) -> Style {
+        let index = max(0, min(x, points.count - 1))
+        return Style(background: .colorRGB(self.points[index]))
     }
 }
 
