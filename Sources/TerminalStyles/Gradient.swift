@@ -92,6 +92,19 @@ public struct HorizontalForegroundPerCharacterStyler: PerCharacterStyler, Linear
     }
 }
 
+public struct VerticalForegroundPerCharacterStyler: PerCharacterStyler, LinearGradient {
+    public let points: [RGBColor8]
+
+    public init(points: [RGBColor8]) {
+        self.points = points
+    }
+
+    public func styleForPosition(x: Int, y: Int) -> Style {
+        let index = max(0, min(y, points.count - 1))
+        return Style(foreground: [.colorRGB(self.points[index])])
+    }
+}
+
 public struct HorizontalBackgroundPerCharacterStyler: PerCharacterStyler, LinearGradient {
     public let points: [RGBColor8]
 
@@ -101,6 +114,19 @@ public struct HorizontalBackgroundPerCharacterStyler: PerCharacterStyler, Linear
 
     public func styleForPosition(x: Int, y: Int) -> Style {
         let index = max(0, min(x, points.count - 1))
+        return Style(background: .colorRGB(self.points[index]))
+    }
+}
+
+public struct VerticalBackgroundPerCharacterStyler: PerCharacterStyler, LinearGradient {
+    public let points: [RGBColor8]
+
+    public init(points: [RGBColor8]) {
+        self.points = points
+    }
+
+    public func styleForPosition(x: Int, y: Int) -> Style {
+        let index = max(0, min(y, points.count - 1))
         return Style(background: .colorRGB(self.points[index]))
     }
 }
