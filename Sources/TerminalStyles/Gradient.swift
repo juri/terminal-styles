@@ -68,13 +68,13 @@ extension LinearGradient {
         self.init(points: rgbPoints)
     }
 
-    public init(hslGradient: GradientHorizontalHSL) {
+    public init(hslGradient: LinearGradientHSL) {
         self.init(hslPoints: hslGradient.points)
     }
 
     public init?(length: Int, stops: [(Double, RGBColor8)]) {
         let hslPoints = stops.map { ($0, HSLColor(rgb: $1)) }
-        guard let hslGradient = GradientHorizontalHSL(length: length, stops: hslPoints) else { return nil }
+        guard let hslGradient = LinearGradientHSL(length: length, stops: hslPoints) else { return nil }
         self.init(hslGradient: hslGradient)
     }
 }
@@ -105,24 +105,23 @@ public struct HorizontalBackgroundPerCharacterStyler: PerCharacterStyler, Linear
     }
 }
 
-/// `GradientHorizontalHSL` is a type that describes a linear gradient that progresses horizontally on a text line.
-/// Each `HSLColor` value in the `points` array represents one character on the line.
-public struct GradientHorizontalHSL {
+/// `LinearGradientHSL` is a type that describes a linear gradient that progresses through distinct points.
+public struct LinearGradientHSL {
     public let points: [HSLColor]
 
     public init(points: [HSLColor]) {
         self.points = points
     }
 
-    /// Create a `GradientHorizontalHSL` for a line of `length` characters.
+    /// Create a `LinearGradientHSL` of `length` points.
     /// - Parameters:
     ///     - stops: An array of tuples where the `Double` value is in the range 0...1 and represents
-    ///              a fractional location on the line, and the `HSLColor` is a color for that point.
+    ///              a fractional location in the gradient space, and the `HSLColor` is a color for that point.
     ///              If the Double value in the first `point` is larger than 0.0, the color from the
-    ///              start of the line to that point is solid. If the Double value in the last `point`
-    ///              is less than 1.0, the color from that point to the end of the line is solid.
+    ///              start of the space to that point is solid. If the Double value in the last `point`
+    ///              is less than 1.0, the color from that point to the end of the space is solid.
     ///              If there's more than two values, the gradient progresses through those stops.
-    /// - Returns: A ``GradientHorizontalHSL`` with `length` values in the ``GradientHorizontalHSL/points`` array.
+    /// - Returns: A ``LinearGradientHSL`` with `length` values in the ``LinearGradientHSL/points`` array.
     ///
     public init?(length: Int, stops: [(Double, HSLColor)]) {
         guard length > 0, !stops.isEmpty else { return nil }
