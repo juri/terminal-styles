@@ -54,18 +54,32 @@ public struct StyleBuilder: Sendable {
     }
 
     /// Print out the string generated from `builder`.
-    public static func print(@StyleBuilder _ builder: () -> any StyledOutput) {
-        Swift.print(self.string(builder))
+    /// - Parameter reset: If true, finish the output with a style reset.
+    public static func print(
+        reset: Bool = true,
+        @StyleBuilder _ builder: () -> any StyledOutput,
+    ) {
+        Swift.print(self.string(builder) + (reset ? resetString : ""))
     }
 
     /// Print out the string generated from `builder` to `stream`.
-    public static func print(to stream: inout some TextOutputStream, @StyleBuilder _ builder: () -> any StyledOutput) {
-        Swift.print(self.string(builder), to: &stream)
+    /// - Parameter reset: If true, finish the output with a style reset.
+    public static func print(
+        reset: Bool = true,
+        to stream: inout some TextOutputStream,
+        @StyleBuilder _ builder: () -> any StyledOutput,
+    ) {
+        Swift.print(self.string(builder) + (reset ? resetString : ""), to: &stream)
     }
 
     /// Print out the string generated from `builder` to `fileHandle`.
-    public static func print(to fileHandle: FileHandle, @StyleBuilder _ builder: () -> any StyledOutput) throws {
-        try fileHandle.write(contentsOf: Data(self.string(builder).utf8))
+    /// - Parameter reset: If true, finish the output with a style reset.
+    public static func print(
+        reset: Bool = true,
+        to fileHandle: FileHandle,
+        @StyleBuilder _ builder: () -> any StyledOutput,
+    ) throws {
+        try fileHandle.write(contentsOf: Data((self.string(builder) + (reset ? resetString : "")).utf8))
     }
 }
 
@@ -142,3 +156,5 @@ public struct StyledOutputGroup: StyledOutput {
         group.flatMap(\.controlCode)
     }
 }
+
+private let resetString: String = ANSIControlCode.setGraphicsRendition([.reset]).ansiCommand.message
