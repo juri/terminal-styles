@@ -13,6 +13,11 @@ public protocol PerCharacterStyler {
 }
 
 extension PerCharacterStyler {
+    /// Apply the `PerCharacterStyles` to a sequence of lines.
+    /// - Parameters:
+    ///     - lines: The lines to style.
+    ///     - addNewLines: If true, newlines will be added to the ends of the lines.
+    ///     - reset: If true, style resets will be added to the ends of the lines, before the added newline.
     public func apply(
         lines: some Sequence<some StringProtocol>,
         addNewLines: Bool = true,
@@ -23,6 +28,12 @@ extension PerCharacterStyler {
         }.joined()
     }
 
+    /// Apply the `PerCharacterStyles` to a line of text.
+    /// - Parameters:
+    ///     - line: The line to style.
+    ///     - lineIndex: The index of this line in a larger block of text.
+    ///     - addNewLine: If true, a newline will be added to the end of the line.
+    ///     - reset: If true, a style reset will be added to the end of the line, before the added newline.
     public func apply(
         line: some StringProtocol,
         lineIndex: Int,
@@ -43,6 +54,9 @@ extension PerCharacterStyler {
     }
 }
 
+/// Join two stylers.
+///
+/// The values from `styler2` will override those from `styler1` in case of conflict.
 public struct JoinedPerCharacterStyler<S1: PerCharacterStyler, S2: PerCharacterStyler>: PerCharacterStyler {
     public let styler1: S1
     public let styler2: S2
@@ -59,6 +73,8 @@ public struct JoinedPerCharacterStyler<S1: PerCharacterStyler, S2: PerCharacterS
     }
 }
 
+/// A styler that returns the colors from `points` as ``Foreground/colorRGB(_:)`` based on the
+/// `x` parameter of ``styleForPosition(x:y:)``.
 public struct HorizontalForegroundPerCharacterStyler: PerCharacterStyler {
     public let points: [RGBColor8]
 
@@ -72,6 +88,8 @@ public struct HorizontalForegroundPerCharacterStyler: PerCharacterStyler {
     }
 }
 
+/// A styler that returns the colors from `points` as ``Foreground/colorRGB(_:)`` based on the
+/// `y` parameter of ``styleForPosition(x:y:)``.
 public struct VerticalForegroundPerCharacterStyler: PerCharacterStyler {
     public let points: [RGBColor8]
 
@@ -85,6 +103,8 @@ public struct VerticalForegroundPerCharacterStyler: PerCharacterStyler {
     }
 }
 
+/// A styler that returns the colors from `points` as ``Background/color256(_:)`` based on the
+/// `x` parameter of ``styleForPosition(x:y:)``.
 public struct HorizontalBackgroundPerCharacterStyler: PerCharacterStyler {
     public let points: [RGBColor8]
 
@@ -98,6 +118,8 @@ public struct HorizontalBackgroundPerCharacterStyler: PerCharacterStyler {
     }
 }
 
+/// A styler that returns the colors from `points` as ``Background/color256(_:)`` based on the
+/// `y` parameter of ``styleForPosition(x:y:)``.
 public struct VerticalBackgroundPerCharacterStyler: PerCharacterStyler {
     public let points: [RGBColor8]
 

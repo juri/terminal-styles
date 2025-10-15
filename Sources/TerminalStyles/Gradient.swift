@@ -12,15 +12,18 @@ public protocol LinearGradient {
 }
 
 extension LinearGradient {
+    /// Create a `LineearGradient` from `HSLColor` points.
     public init(hslGradientPoints: [HSLColor]) {
         let rgbPoints = hslGradientPoints.map(RGBColor8.init(hsl:))
         self.init(points: rgbPoints)
     }
 
+    /// Create a `LineearGradient` from a ``LinearGradientHSL``.
     public init(hslGradient: LinearGradientHSL) {
         self.init(hslGradientPoints: hslGradient.points)
     }
 
+    /// Create a `LineearGradient` of `length`, going through `stops`.
     public init?(linearGradientLength length: Int, stops: [(Double, RGBColor8)]) {
         let hslPoints = stops.map { ($0, HSLColor(rgb: $1)) }
         guard let hslGradient = LinearGradientHSL(length: length, stops: hslPoints) else { return nil }
