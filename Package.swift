@@ -17,7 +17,8 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/juri/terminal-ansi", from: "0.1.5")
+        .package(url: "https://github.com/juri/terminal-ansi", from: "0.1.5"),
+        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.18.0"),
     ],
     targets: [
         .executableTarget(
@@ -35,7 +36,10 @@ let package = Package(
         ),
         .testTarget(
             name: "TerminalStylesTests",
-            dependencies: ["TerminalStyles"]
+            dependencies: [
+                "TerminalStyles",
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+            ],
         ),
     ]
 )
