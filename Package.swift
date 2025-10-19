@@ -17,7 +17,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/juri/terminal-ansi", from: "0.1.5"),
+        .package(url: "https://github.com/juri/terminal-ansi", from: "0.2.1"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.18.0"),
     ],
     targets: [
