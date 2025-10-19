@@ -166,21 +166,6 @@ public enum Foreground: Equatable, Sendable {
         }
     }
 
-    var isBold: Bool {
-        guard case .bold = self else { return false }
-        return true
-    }
-
-    var isItalic: Bool {
-        guard case .italic = self else { return false }
-        return true
-    }
-
-    var isUnderline: Bool {
-        guard case .underline = self else { return false }
-        return true
-    }
-
     /// Add `foregrounds` to a list of `Foreground` values.
     ///
     /// This method removes any existing `Foreground` values from `list` where they
