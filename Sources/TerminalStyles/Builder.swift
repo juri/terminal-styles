@@ -7,7 +7,7 @@
 import Foundation
 import TerminalANSI
 
-/// Build ``StyledOutput`` from ``Foreground``, ``Background``, ``Style``, ``String``
+/// Build ``StyledOutput`` from ``Foreground``, ``Background``, ``Style``, `ANSIControlCode`, `String`,
 /// and other ``StyledOutput`` values.
 ///
 /// Use ``string(_:)`` to generate a printable string, or call directly one of the static `print` methods
@@ -40,6 +40,9 @@ public struct StyleBuilder: Sendable {
     }
     public static func buildExpression(_ expression: (any StyledOutput)?) -> any StyledOutput {
         expression.map { StyledOutputGroup(group: [$0]) } ?? StyledOutputEmpty()
+    }
+    public static func buildExpression(_ expression: ANSIControlCode) -> any StyledOutput {
+        StyledOutputANSIControlCodes(controlCode: [expression])
     }
     public static func buildIf(_ element: (any StyledOutput)?) -> any StyledOutput { element ?? StyledOutputEmpty() }
 
@@ -146,6 +149,10 @@ public struct StyledOutputText: StyledOutput {
 /// Empty ``StyleOutput``.
 public struct StyledOutputEmpty: StyledOutput {
     public let controlCode: [ANSIControlCode] = []
+}
+
+public struct StyledOutputANSIControlCodes: StyledOutput {
+    public var controlCode: [ANSIControlCode]
 }
 
 /// A ``StyleOutput`` value with a list of ``StyleOutput`` values.
