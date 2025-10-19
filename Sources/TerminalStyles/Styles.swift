@@ -123,6 +123,7 @@ public enum Foreground: Equatable, Sendable {
     case colorBasicBright(BasicPalette)
     case colorRGB(RGBColor8)
     case crossOut
+    case doubleUnderline
     case faint
     case italic
     case overline
@@ -138,6 +139,7 @@ public enum Foreground: Equatable, Sendable {
         case let .colorBasicBright(c): .textBasicBright(c)
         case let .colorRGB(c): .textRGB(c)
         case .crossOut: .crossOut
+        case .doubleUnderline: .doubleUnderline
         case .faint: .faint
         case .italic: .italic
         case .overline: .overline
@@ -155,6 +157,7 @@ public enum Foreground: Equatable, Sendable {
         case .colorBasicBright: true
         case .colorRGB: true
         case .crossOut: false
+        case .doubleUnderline: false
         case .faint: false
         case .italic: false
         case .overline: false
@@ -187,6 +190,7 @@ public enum Foreground: Equatable, Sendable {
         var bold: Foreground?
         var color: Foreground?
         var crossOut: Foreground?
+        var doubleUnderline: Foreground?
         var faint: Foreground?
         var italic: Foreground?
         var overline: Foreground?
@@ -199,6 +203,7 @@ public enum Foreground: Equatable, Sendable {
             case .bold: bold = f
             case .color256, .colorRGB, .colorBasic, .colorBasicBright: color = f
             case .crossOut: crossOut = f
+            case .doubleUnderline: doubleUnderline = f
             case .faint: faint = f
             case .italic: italic = f
             case .overline: overline = f
@@ -213,6 +218,7 @@ public enum Foreground: Equatable, Sendable {
             case .bold: bold == nil
             case .color256, .colorRGB, .colorBasic, .colorBasicBright: color == nil
             case .crossOut: crossOut == nil
+            case .doubleUnderline: doubleUnderline == nil
             case .faint: faint == nil
             case .italic: italic == nil
             case .overline: overline == nil
@@ -225,6 +231,7 @@ public enum Foreground: Equatable, Sendable {
         if let bold { filtered.append(bold) }
         if let color { filtered.append(color) }
         if let crossOut { filtered.append(crossOut) }
+        if let doubleUnderline { filtered.append(doubleUnderline) }
         if let italic { filtered.append(italic) }
         if let overline { filtered.append(overline) }
         if let reverse { filtered.append(reverse) }
