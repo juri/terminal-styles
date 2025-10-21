@@ -56,23 +56,32 @@ public struct StyleBuilder: Sendable {
         builder().controlCode.map(\.ansiCommand.message).joined()
     }
 
-    /// Print out the string generated from `builder`.
-    /// - Parameter reset: If true, finish the output with a style reset.
+    /// Print out the string generated from `builder` using `Swift.print`.
+    /// - Parameters:
+    ///     - reset: If true, finish the output with a style reset.
+    ///     - terminator: The string to print after the string created from `builder`.
+    ///     - builder: The builder to stringify and print
     public static func print(
         reset: Bool = true,
+        terminator: String = "\n",
         @StyleBuilder _ builder: () -> any StyledOutput,
     ) {
-        Swift.print(self.string(builder) + (reset ? resetString : ""))
+        Swift.print(self.string(builder) + (reset ? resetString : ""), terminator: terminator)
     }
 
-    /// Print out the string generated from `builder` to `stream`.
-    /// - Parameter reset: If true, finish the output with a style reset.
+    /// Print out the string generated from `builder` to `stream` using `Swift.print`.
+    /// - Parameters:
+    ///     - reset: If true, finish the output with a style reset.
+    ///     - terminator: The string to print after the string created from `builder`.
+    ///     - stream: The stream to print to.
+    ///     - builder: The builder to stringify and print
     public static func print(
         reset: Bool = true,
+        terminator: String = "\n",
         to stream: inout some TextOutputStream,
         @StyleBuilder _ builder: () -> any StyledOutput,
     ) {
-        Swift.print(self.string(builder) + (reset ? resetString : ""), to: &stream)
+        Swift.print(self.string(builder) + (reset ? resetString : ""), terminator: terminator, to: &stream)
     }
 
     /// Print out the string generated from `builder` to `fileHandle`.
