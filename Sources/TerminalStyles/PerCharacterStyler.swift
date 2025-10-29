@@ -132,3 +132,18 @@ public struct VerticalBackgroundPerCharacterStyler: PerCharacterStyler {
         return Style(background: .colorRGB(self.points[index]))
     }
 }
+
+/// A styler that always returns the static `style` value, regardless of the parameters passed to
+/// ``styleForPosition(x:y:)``.
+public struct ConstantPerCharacterStyler: PerCharacterStyler {
+    public let style: Style
+
+    /// Initialize with the given ``Style``.
+    public init(style: Style) {
+        self.style = style
+    }
+
+    public func styleForPosition(x: Int, y: Int) -> Style {
+        self.style
+    }
+}
