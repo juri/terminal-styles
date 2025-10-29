@@ -73,9 +73,11 @@ public struct JoinedPerCharacterStyler<S1: PerCharacterStyler, S2: PerCharacterS
     }
 }
 
+extension JoinedPerCharacterStyler: Sendable where S1: Sendable, S2: Sendable {}
+
 /// A styler that returns the colors from `points` as ``Foreground/colorRGB(_:)`` based on the
 /// `x` parameter of ``styleForPosition(x:y:)``.
-public struct HorizontalForegroundPerCharacterStyler: PerCharacterStyler {
+public struct HorizontalForegroundPerCharacterStyler: PerCharacterStyler, Sendable {
     public let points: [RGBColor8]
 
     public init(points: [RGBColor8]) {
@@ -90,7 +92,7 @@ public struct HorizontalForegroundPerCharacterStyler: PerCharacterStyler {
 
 /// A styler that returns the colors from `points` as ``Foreground/colorRGB(_:)`` based on the
 /// `y` parameter of ``styleForPosition(x:y:)``.
-public struct VerticalForegroundPerCharacterStyler: PerCharacterStyler {
+public struct VerticalForegroundPerCharacterStyler: PerCharacterStyler, Sendable {
     public let points: [RGBColor8]
 
     public init(points: [RGBColor8]) {
@@ -105,7 +107,7 @@ public struct VerticalForegroundPerCharacterStyler: PerCharacterStyler {
 
 /// A styler that returns the colors from `points` as ``Background/color256(_:)`` based on the
 /// `x` parameter of ``styleForPosition(x:y:)``.
-public struct HorizontalBackgroundPerCharacterStyler: PerCharacterStyler {
+public struct HorizontalBackgroundPerCharacterStyler: PerCharacterStyler, Sendable {
     public let points: [RGBColor8]
 
     public init(points: [RGBColor8]) {
@@ -120,7 +122,7 @@ public struct HorizontalBackgroundPerCharacterStyler: PerCharacterStyler {
 
 /// A styler that returns the colors from `points` as ``Background/color256(_:)`` based on the
 /// `y` parameter of ``styleForPosition(x:y:)``.
-public struct VerticalBackgroundPerCharacterStyler: PerCharacterStyler {
+public struct VerticalBackgroundPerCharacterStyler: PerCharacterStyler, Sendable {
     public let points: [RGBColor8]
 
     public init(points: [RGBColor8]) {
@@ -135,7 +137,7 @@ public struct VerticalBackgroundPerCharacterStyler: PerCharacterStyler {
 
 /// A styler that always returns the static `style` value, regardless of the parameters passed to
 /// ``styleForPosition(x:y:)``.
-public struct ConstantPerCharacterStyler: PerCharacterStyler {
+public struct ConstantPerCharacterStyler: PerCharacterStyler, Sendable {
     public let style: Style
 
     /// Initialize with the given ``Style``.
