@@ -5,9 +5,10 @@
 
 # terminal-styles
 
-``terminal-styles`` is a small Swift library for building up terminal output styles. It builds on [terminal-ansi].
+``terminal-styles`` is a small Swift library for building up terminal output styles. It builds on [terminal-ansi]. For UI components that use these libraries, see [terminal-widgets].
 
 [terminal-ansi]: https://github.com/juri/terminal-ansi.git
+[terminal-widgets]: https://github.com/juri/terminal-widgets.git
 
 ## Example
 
